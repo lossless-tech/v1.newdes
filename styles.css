@@ -1,0 +1,547 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --bg-primary: #000000;
+    --text-primary: #ffffff;
+    --accent: #ffffff;
+    --transition-speed: 0.6s;
+    --easing: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body {
+    font-family: 'Consolas', monospace;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    overflow-x: hidden;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.container {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+}
+
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 2rem;
+    z-index: 100;
+    pointer-events: none;
+    overflow: visible;
+}
+
+.logo {
+    font-size: 2.5rem;
+    font-weight: 300;
+    animation: fadeIn 1s var(--easing) 0.1s both;
+    width: 50vw;
+    text-transform: uppercase;
+    white-space: nowrap;
+    background-color: var(--text-primary);
+    color: var(--bg-primary);
+    padding: 0.5rem 1rem;
+    display: inline-block;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+.navigation {
+    position: fixed;
+    top: 8rem;
+    left: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+    z-index: 10;
+    transition: opacity var(--transition-speed) var(--easing);
+    animation: fadeIn 1s var(--easing) 0.3s both;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.nav-item {
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s var(--easing);
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0;
+    padding: 0.25rem 0;
+    animation: slideInLeft 0.8s var(--easing) both;
+    overflow: visible;
+}
+
+.nav-item:nth-child(1) { animation-delay: 0.5s; }
+.nav-item:nth-child(2) { animation-delay: 0.6s; }
+.nav-item:nth-child(3) { animation-delay: 0.7s; }
+.nav-item:nth-child(4) { animation-delay: 0.8s; }
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.nav-item:hover {
+    transform: translateX(10px);
+}
+
+.nav-label {
+    font-size: 2rem;
+    font-weight: 300;
+    letter-spacing: 0.1em;
+    opacity: 1.0;
+    border: 1px solid var(--text-primary);
+    padding: 0.25rem 0.5rem 0.25rem 0.5rem;
+    transition: width 0.6s var(--easing), background-color 0.3s var(--easing), color 0.3s var(--easing);
+    cursor: pointer;
+    white-space: nowrap;
+    display: inline-block;
+    position: relative;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+.nav-item:hover .nav-label {
+    background-color: var(--text-primary);
+    color: var(--bg-primary);
+}
+
+.nav-full {
+    font-size: 2rem;
+    font-weight: 300;
+    letter-spacing: 0.1em;
+    text-transform: lowercase;
+    display: inline-block;
+    white-space: nowrap;
+    vertical-align: baseline;
+}
+
+.nav-full span {
+    opacity: 0;
+    display: inline-block;
+    transition: opacity 0.1s ease-in;
+}
+
+.sections {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+}
+
+.section {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background-color: var(--bg-primary);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(100%);
+    transition: transform var(--transition-speed) var(--easing),
+                opacity var(--transition-speed) var(--easing),
+                visibility 0s var(--transition-speed);
+    z-index: 20;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.section.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    transition: transform var(--transition-speed) var(--easing),
+                opacity var(--transition-speed) var(--easing),
+                visibility 0s;
+}
+
+.section-content {
+    padding: 8rem 4rem 4rem;
+    max-width: 1200px;
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    animation: slideUp 0.8s var(--easing) both;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.section-header h2 {
+    font-size: 3rem;
+    font-weight: 300;
+    letter-spacing: 0.2em;
+    text-transform: lowercase;
+}
+
+.section-close {
+    font-size: 3rem;
+    cursor: pointer;
+    opacity: 0.6;
+    transition: opacity 0.3s var(--easing);
+    line-height: 1;
+    width: 3rem;
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.section-close:hover {
+    opacity: 1;
+}
+
+.section-body {
+    flex: 1;
+    font-size: 1.1rem;
+    line-height: 1.8;
+    letter-spacing: 0.05em;
+    opacity: 0.8;
+}
+
+/* Roster Styles */
+.roster {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.roster-item {
+    cursor: pointer;
+    transition: transform 0.3s var(--easing);
+}
+
+.roster-item:hover {
+    transform: translateY(-5px);
+}
+
+.roster-thumbnail {
+    position: relative;
+    width: 100%;
+    padding-bottom: 100%;
+    overflow: hidden;
+    border: 2px solid transparent;
+    transition: border-color 0.3s var(--easing);
+}
+
+.roster-item:hover .roster-thumbnail {
+    border-color: var(--text-primary);
+}
+
+.roster-thumbnail img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.roster-name {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+    padding: 1.5rem 1rem 1rem;
+    font-size: 1.2rem;
+    font-weight: 300;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+/* Artist Info Sections */
+.artist-info {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background-color: var(--bg-primary);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(100%);
+    transition: transform var(--transition-speed) var(--easing),
+                opacity var(--transition-speed) var(--easing),
+                visibility 0s var(--transition-speed);
+    z-index: 30;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.artist-info.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    transition: transform var(--transition-speed) var(--easing),
+                opacity var(--transition-speed) var(--easing),
+                visibility 0s;
+}
+
+.artist-info-content {
+    padding: 8rem 4rem 4rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    animation: slideUp 0.8s var(--easing) both;
+}
+
+.artist-info-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.artist-info-header h2 {
+    font-size: 3rem;
+    font-weight: 300;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+}
+
+.artist-info-close {
+    font-size: 3rem;
+    cursor: pointer;
+    opacity: 0.6;
+    transition: opacity 0.3s var(--easing);
+    line-height: 1;
+    width: 3rem;
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.artist-info-close:hover {
+    opacity: 1;
+}
+
+.artist-info-body {
+    flex: 1;
+    font-size: 1.1rem;
+    line-height: 1.8;
+    letter-spacing: 0.05em;
+    opacity: 0.8;
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+}
+
+.artist-bio {
+    margin-bottom: 2rem;
+}
+
+.artist-bio h3 {
+    font-size: 1.5rem;
+    font-weight: 300;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    opacity: 1;
+}
+
+.artist-bio p {
+    line-height: 1.8;
+    opacity: 0.8;
+}
+
+.artist-links {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.artist-link {
+    display: inline-block;
+    border: 1px solid var(--text-primary);
+    padding: 0.75rem 1.5rem;
+    text-decoration: none;
+    color: var(--text-primary);
+    font-size: 1rem;
+    font-weight: 300;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: all 0.3s var(--easing);
+    width: 200px;
+    text-align: center;
+}
+
+.artist-link:hover {
+    background-color: var(--text-primary);
+    color: var(--bg-primary);
+    transform: translateX(10px);
+}
+
+.navigation.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+    width: 2px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 1px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+/* Roster Responsive */
+@media (min-width: 480px) {
+    .roster {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 768px) {
+    .roster {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (min-width: 1024px) {
+    .roster {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .header {
+        padding: 1.5rem 1rem;
+    }
+    
+    .logo {
+        font-size: 2.5rem;
+        width: calc(100vw - 2rem);
+        max-width: calc(100vw - 2rem);
+        white-space: nowrap;
+        letter-spacing: 0.05em;
+        overflow: hidden;
+        padding: 0.4rem 1rem;
+        box-sizing: border-box;
+        margin: 0 auto;
+        display: block;
+    }
+    
+    .navigation {
+        left: 1rem;
+        gap: 3rem;
+    }
+    
+    .nav-label {
+        font-size: 3rem;
+        padding: 0.5rem 0.5rem 0.5rem 0.7rem;
+        overflow: visible !important;
+        box-sizing: border-box;
+    }
+    
+    .nav-item {
+        overflow: visible;
+    }
+    
+    .nav-full {
+        font-size: 3rem;
+    }
+    
+    .section-content {
+        padding: 6rem 2rem 2rem;
+    }
+    
+    .section-header h2 {
+        font-size: 2rem;
+    }
+    
+    .section-body {
+        font-size: 1rem;
+    }
+    
+    .section-close {
+        font-size: 2.5rem;
+    }
+    
+    .roster {
+        gap: 1.5rem;
+    }
+    
+    .roster-name {
+        font-size: 1.75rem;
+        padding: 1.5rem 1rem 1rem;
+    }
+    
+    .artist-info-content {
+        padding: 6rem 2rem 2rem;
+    }
+    
+    .artist-info-header h2 {
+        font-size: 2rem;
+    }
+    
+    .artist-info-body {
+        font-size: 1rem;
+    }
+    
+    .artist-info-close {
+        font-size: 2.5rem;
+    }
+}
+
