@@ -228,12 +228,22 @@ class SectionManager {
             // Calculate target width: 50vw minus padding (content area)
             const isMobile = window.innerWidth <= 768;
             
-            // Ensure logo box is exactly 50vw (or calc(100vw - 3rem) on mobile)
-            logo.style.width = isMobile ? 'calc(100vw - 3rem)' : '50vw';
+            // On mobile, use actual viewport width instead of 100vw to avoid scrollbar/safe area issues
+            if (isMobile) {
+                // Use document.documentElement.clientWidth for more accurate mobile viewport
+                const viewportWidth = document.documentElement.clientWidth || window.innerWidth;
+                // Subtract 3rem (48px at default) for margins
+                const mobileWidth = viewportWidth - 48;
+                logo.style.width = mobileWidth + 'px';
+            } else {
+                logo.style.width = '50vw';
+            }
+            
+            // Force a reflow to get accurate measurements on mobile devices
+            void logo.offsetHeight;
             
             // Get the actual computed width after setting it
             const boxWidth = logo.offsetWidth;
-            const targetWidth = boxWidth - paddingLeft - paddingRight;
             
             // Calculate total width of text with current font settings but no letter-spacing
             const tempDiv = document.createElement('div');
@@ -244,20 +254,43 @@ class SectionManager {
             tempDiv.style.textTransform = textTransform;
             tempDiv.style.letterSpacing = '0';
             tempDiv.style.whiteSpace = 'nowrap';
+            tempDiv.style.fontFamily = computedStyle.fontFamily;
             tempDiv.textContent = originalText;
             document.body.appendChild(tempDiv);
             const textWidth = tempDiv.offsetWidth;
             document.body.removeChild(tempDiv);
+            
+            // Calculate available width for text (box width minus padding on both sides)
+            // On mobile, add extra buffer to ensure padding is maintained on both sides
+            // Use larger buffer on mobile to account for device differences and ensure right padding
+            const mobileBuffer = isMobile ? 20 : 0;
+            const targetWidth = boxWidth - paddingLeft - paddingRight - mobileBuffer;
             
             // Calculate letter-spacing needed to fill target width
             const charCount = originalText.length;
             const availableWidth = targetWidth - textWidth;
             let letterSpacing = charCount > 1 ? availableWidth / (charCount - 1) : 0;
             
-            // On mobile, be more conservative with spacing to prevent overflow
-            if (isMobile && letterSpacing < 0) {
-                // If text is too wide, reduce letter spacing to fit
-                letterSpacing = -2; // Slight negative spacing to compress if needed
+            // On mobile, ensure we don't exceed the available space and maintain padding
+            if (isMobile) {
+                // Verify the total text width with spacing fits within target
+                const totalTextWidth = textWidth + (letterSpacing * (charCount - 1));
+                if (totalTextWidth > targetWidth) {
+                    // Recalculate to fit exactly within target width (leaving buffer for padding)
+                    letterSpacing = (targetWidth - textWidth) / (charCount - 1);
+                }
+                
+                // Additional safety check: ensure we're not too close to the edge
+                // Recalculate total width and if it's still too wide, reduce font size slightly
+                const finalTotalWidth = textWidth + (letterSpacing * (charCount - 1));
+                if (finalTotalWidth > targetWidth - 4) { // 4px safety margin
+                    letterSpacing = ((targetWidth - 4) - textWidth) / (charCount - 1);
+                }
+                
+                // If still too wide, use negative spacing to compress slightly
+                if (letterSpacing < 0) {
+                    letterSpacing = Math.max(letterSpacing, -1.5);
+                }
             }
             
             // Ensure minimum letter-spacing to prevent overlap (0.05em minimum)
