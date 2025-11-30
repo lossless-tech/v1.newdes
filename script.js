@@ -22,7 +22,8 @@ class SectionManager {
         // Function to get expanded width (half viewport on desktop, smaller on mobile)
         const getExpandedWidth = () => {
             if (window.innerWidth <= 768) {
-                return Math.min(window.innerWidth * 0.8, 400); // 80vw or max 400px on mobile
+                // Account for left margin (1rem) and some padding - use 70vw or max 350px on mobile
+                return Math.min(window.innerWidth * 0.7, 350);
             }
             return window.innerWidth / 2; // 50vw on desktop
         };

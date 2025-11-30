@@ -491,12 +491,14 @@ body {
     .nav-label {
         font-size: 3rem;
         padding: 0.5rem 0.5rem 0.5rem 0.7rem;
-        overflow: visible !important;
+        overflow: hidden !important;
         box-sizing: border-box;
+        max-width: calc(100vw - 2rem);
     }
     
     .nav-item {
-        overflow: visible;
+        overflow: hidden;
+        max-width: calc(100vw - 2rem);
     }
     
     .nav-full {
