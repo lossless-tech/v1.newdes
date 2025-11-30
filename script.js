@@ -226,8 +226,8 @@ class SectionManager {
             // Calculate target width: 50vw minus padding (content area)
             const isMobile = window.innerWidth <= 768;
             
-            // Ensure logo box is exactly 50vw (or calc(100vw - 2rem) on mobile)
-            logo.style.width = isMobile ? 'calc(100vw - 2rem)' : '50vw';
+            // Ensure logo box is exactly 50vw (or calc(100vw - 3rem) on mobile)
+            logo.style.width = isMobile ? 'calc(100vw - 3rem)' : '50vw';
             
             // Get the actual computed width after setting it
             const boxWidth = logo.offsetWidth;

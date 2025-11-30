@@ -472,12 +472,12 @@ body {
     
     .logo {
         font-size: 2.5rem;
-        width: calc(100vw - 2rem);
-        max-width: calc(100vw - 2rem);
+        width: calc(100vw - 3rem);
+        max-width: calc(100vw - 3rem);
         white-space: nowrap;
         letter-spacing: 0.05em;
         overflow: hidden;
-        padding: 0.4rem 1rem;
+        padding: 0.4rem 0.8rem;
         box-sizing: border-box;
         margin: 0 auto;
         display: block;
