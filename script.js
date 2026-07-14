@@ -215,90 +215,65 @@ class SectionManager {
         const originalText = logo.textContent.trim();
         
         const updateSpacing = () => {
+            // Clear inline overrides so measurements reflect the stylesheet
+            logo.style.fontSize = '';
+            logo.style.letterSpacing = '';
+
             // Get computed styles from the logo element to respect media queries
+            // (width comes from CSS: 50vw desktop, calc(100vw - 3rem) mobile)
             const computedStyle = window.getComputedStyle(logo);
-            const fontSize = computedStyle.fontSize;
             const fontWeight = computedStyle.fontWeight;
+            const fontFamily = computedStyle.fontFamily;
             const textTransform = computedStyle.textTransform;
-            
-            // Get padding to calculate content width (text area inside padding)
             const paddingLeft = parseFloat(computedStyle.paddingLeft);
             const paddingRight = parseFloat(computedStyle.paddingRight);
-            
-            // Calculate target width: 50vw minus padding (content area)
-            const isMobile = window.innerWidth <= 768;
-            
-            // On mobile, use actual viewport width instead of 100vw to avoid scrollbar/safe area issues
-            if (isMobile) {
-                // Use document.documentElement.clientWidth for more accurate mobile viewport
-                const viewportWidth = document.documentElement.clientWidth || window.innerWidth;
-                // Subtract 3rem (48px at default) for margins
-                const mobileWidth = viewportWidth - 48;
-                logo.style.width = mobileWidth + 'px';
-            } else {
-                logo.style.width = '50vw';
-            }
-            
-            // Force a reflow to get accurate measurements on mobile devices
-            void logo.offsetHeight;
-            
-            // Get the actual computed width after setting it
-            const boxWidth = logo.offsetWidth;
-            
-            // Calculate total width of text with current font settings but no letter-spacing
-            const tempDiv = document.createElement('div');
-            tempDiv.style.visibility = 'hidden';
-            tempDiv.style.position = 'absolute';
-            tempDiv.style.fontSize = fontSize;
-            tempDiv.style.fontWeight = fontWeight;
-            tempDiv.style.textTransform = textTransform;
-            tempDiv.style.letterSpacing = '0';
-            tempDiv.style.whiteSpace = 'nowrap';
-            tempDiv.style.fontFamily = computedStyle.fontFamily;
-            tempDiv.textContent = originalText;
-            document.body.appendChild(tempDiv);
-            const textWidth = tempDiv.offsetWidth;
-            document.body.removeChild(tempDiv);
-            
-            // Calculate available width for text (box width minus padding on both sides)
-            // On mobile, add extra buffer to ensure padding is maintained on both sides
-            // Use larger buffer on mobile to account for device differences and ensure right padding
-            const mobileBuffer = isMobile ? 20 : 0;
-            const targetWidth = boxWidth - paddingLeft - paddingRight - mobileBuffer;
-            
-            // Calculate letter-spacing needed to fill target width
+
+            // Available width for the glyphs (content area inside padding)
+            const targetWidth = logo.offsetWidth - paddingLeft - paddingRight;
             const charCount = originalText.length;
-            const availableWidth = targetWidth - textWidth;
-            let letterSpacing = charCount > 1 ? availableWidth / (charCount - 1) : 0;
-            
-            // On mobile, ensure we don't exceed the available space and maintain padding
-            if (isMobile) {
-                // Verify the total text width with spacing fits within target
-                const totalTextWidth = textWidth + (letterSpacing * (charCount - 1));
-                if (totalTextWidth > targetWidth) {
-                    // Recalculate to fit exactly within target width (leaving buffer for padding)
-                    letterSpacing = (targetWidth - textWidth) / (charCount - 1);
-                }
-                
-                // Additional safety check: ensure we're not too close to the edge
-                // Recalculate total width and if it's still too wide, reduce font size slightly
-                const finalTotalWidth = textWidth + (letterSpacing * (charCount - 1));
-                if (finalTotalWidth > targetWidth - 4) { // 4px safety margin
-                    letterSpacing = ((targetWidth - 4) - textWidth) / (charCount - 1);
-                }
-                
-                // If still too wide, use negative spacing to compress slightly
-                if (letterSpacing < 0) {
-                    letterSpacing = Math.max(letterSpacing, -1.5);
-                }
+            if (charCount <= 1 || targetWidth <= 0) return;
+
+            // Measure text width at a given font size with no letter-spacing
+            const measureTextWidth = (size) => {
+                const tempDiv = document.createElement('div');
+                tempDiv.style.visibility = 'hidden';
+                tempDiv.style.position = 'absolute';
+                tempDiv.style.fontSize = size + 'px';
+                tempDiv.style.fontWeight = fontWeight;
+                tempDiv.style.fontFamily = fontFamily;
+                tempDiv.style.textTransform = textTransform;
+                tempDiv.style.letterSpacing = '0';
+                tempDiv.style.whiteSpace = 'nowrap';
+                tempDiv.textContent = originalText;
+                document.body.appendChild(tempDiv);
+                const width = tempDiv.getBoundingClientRect().width;
+                document.body.removeChild(tempDiv);
+                return width;
+            };
+
+            let fontSize = parseFloat(computedStyle.fontSize);
+            let textWidth = measureTextWidth(fontSize);
+            // Minimum letter-spacing to prevent overlap (0.05em)
+            let minSpacing = fontSize * 0.05;
+
+            // If the text can't fit even at minimum spacing, shrink the font
+            // until it does (re-measure each pass — glyph widths don't scale
+            // perfectly linearly due to pixel rounding)
+            let attempts = 0;
+            while (textWidth + minSpacing * (charCount - 1) > targetWidth && fontSize > 8 && attempts < 4) {
+                fontSize *= targetWidth / (textWidth + minSpacing * (charCount - 1));
+                logo.style.fontSize = fontSize + 'px';
+                textWidth = measureTextWidth(fontSize);
+                minSpacing = fontSize * 0.05;
+                attempts++;
             }
-            
-            // Ensure minimum letter-spacing to prevent overlap (0.05em minimum)
-            const minSpacing = parseFloat(fontSize) * 0.05;
-            const finalSpacing = Math.max(letterSpacing, minSpacing);
-            
-            // Apply letter-spacing
-            logo.style.letterSpacing = finalSpacing + 'px';
+
+            // Spacing that makes the glyphs span the content box exactly.
+            // CSS letter-spacing also trails the last character; with
+            // left-aligned text that trailing space falls invisibly past
+            // the last glyph, so the glyph edges land on the padding edges.
+            const letterSpacing = Math.max((targetWidth - textWidth) / (charCount - 1), minSpacing);
+            logo.style.letterSpacing = letterSpacing + 'px';
         };
         
         updateSpacing();

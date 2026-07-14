@@ -51,7 +51,7 @@ body {
     padding: 0.5rem 1rem;
     display: inline-block;
     box-sizing: border-box;
-    text-align: center;
+    text-align: left;
 }
 
 .navigation {
@@ -477,12 +477,10 @@ body {
         white-space: nowrap;
         letter-spacing: 0.05em;
         overflow: hidden;
-        padding: 0.4rem 1.5rem;
+        padding: 0.4rem 0.8rem;
         box-sizing: border-box;
         margin: 0 auto;
         display: block;
-        word-break: keep-all;
-        text-align: center;
     }
     
     .navigation {
