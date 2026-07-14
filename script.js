@@ -112,33 +112,48 @@ class SectionManager {
             data.navLabel.style.width = maxInitialWidth + 'px';
         });
         
+        // Letter reveal timing: wait for the bar to mostly finish extending
+        // (width transition is 0.6s), then reveal slowly enough to follow
+        const LETTER_REVEAL_DELAY = 450;
+        const LETTER_STAGGER = 60;
+
+        // Cancel any pending letter reveals/hides for an item so a quick
+        // hover in/out can't fire stale timers into the wrong state
+        const clearLetterTimers = (item) => {
+            (item._letterTimers || []).forEach(clearTimeout);
+            item._letterTimers = [];
+        };
+
         // Function to expand and reveal a nav item
         const expandNavItem = (item, navLabel, navFull) => {
             navLabel.style.width = getExpandedWidth() + 'px';
+            clearLetterTimers(item);
             const letters = navFull.querySelectorAll('span');
             letters.forEach((letter, index) => {
-                setTimeout(() => {
+                item._letterTimers.push(setTimeout(() => {
                     letter.style.opacity = '1';
-                }, index * 30);
+                }, LETTER_REVEAL_DELAY + index * LETTER_STAGGER));
             });
         };
-        
+
         // Function to collapse a nav item
         const collapseNavItem = (item, navLabel, navFull) => {
             navLabel.style.width = maxInitialWidth + 'px';
+            clearLetterTimers(item);
             const letters = navFull.querySelectorAll('span');
             letters.forEach((letter, index) => {
-                setTimeout(() => {
+                item._letterTimers.push(setTimeout(() => {
                     letter.style.opacity = '0';
-                }, (letters.length - index - 1) * 20);
+                }, (letters.length - index - 1) * 20));
             });
         };
         
         // Second pass: set up letter reveal and hover effects
         widthData.forEach(({ item, navFull, navLabel, originalText }) => {
-            // Wrap each letter in a span
-            navFull.innerHTML = originalText.split('').map((char, index) => {
-                return char === ' ' ? ' ' : `<span style="opacity: 0; transition: opacity 0.1s ease-in ${index * 0.02}s">${char}</span>`;
+            // Wrap each letter in a span (opacity/transition come from the
+            // .nav-full span CSS rule; reveal timing is driven by JS above)
+            navFull.innerHTML = originalText.split('').map(char => {
+                return char === ' ' ? ' ' : `<span>${char}</span>`;
             }).join('');
             
             let isHovering = false;
