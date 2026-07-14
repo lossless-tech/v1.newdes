@@ -22,9 +22,9 @@ class SectionManager {
         // Function to get expanded width (half viewport on desktop, smaller on mobile)
         const getExpandedWidth = () => {
             if (window.innerWidth <= 768) {
-                // On mobile, expand to most of viewport, accounting for left margin (1rem = 16px)
-                // Use 85vw or calculate based on viewport minus left margin
-                return Math.min(window.innerWidth * 0.85, window.innerWidth - 32);
+                // Match the logo box: viewport minus 3rem (1.5rem margin each side)
+                const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
+                return window.innerWidth - 3 * rem;
             }
             return window.innerWidth / 2; // 50vw on desktop
         };
@@ -114,7 +114,7 @@ class SectionManager {
         
         // Letter reveal timing: wait for the bar to mostly finish extending
         // (width transition is 0.6s), then reveal slowly enough to follow
-        const LETTER_REVEAL_DELAY = 450;
+        const LETTER_REVEAL_DELAY = 225;
         const LETTER_STAGGER = 60;
 
         // Cancel any pending letter reveals/hides for an item so a quick

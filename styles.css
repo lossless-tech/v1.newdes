@@ -111,7 +111,8 @@ body {
 }
 
 .nav-label {
-    font-size: 2rem;
+    /* Scale with the viewport (like the logo) below ~800px */
+    font-size: min(2rem, 4vw);
     font-weight: 300;
     letter-spacing: 0.1em;
     opacity: 1.0;
@@ -132,7 +133,7 @@ body {
 }
 
 .nav-full {
-    font-size: 2rem;
+    font-size: inherit;
     font-weight: 300;
     letter-spacing: 0.1em;
     text-transform: lowercase;
@@ -484,25 +485,23 @@ body {
     }
     
     .navigation {
-        left: 1rem;
+        /* Align with the logo's left edge (centered calc(100vw - 3rem) box) */
+        left: 1.5rem;
         gap: 3rem;
     }
-    
+
     .nav-label {
-        font-size: 3rem;
+        /* Scale down on narrow phones so the expanded text fits the bar */
+        font-size: min(3rem, 10.5vw);
         padding: 0.5rem 0.5rem 0.5rem 0.7rem;
         overflow: hidden !important;
         box-sizing: border-box;
-        max-width: calc(100vw - 2rem);
+        max-width: calc(100vw - 3rem);
     }
-    
+
     .nav-item {
         overflow: hidden;
-        max-width: calc(100vw - 2rem);
-    }
-    
-    .nav-full {
-        font-size: 3rem;
+        max-width: calc(100vw - 3rem);
     }
     
     .section-content {
